@@ -121,7 +121,7 @@ function salvarClientes(clientes) {
     const btnWhatsapp = criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
         const mensagem = encodeURIComponent(
-            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n *81997921351*`
+            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX EMAIL* \n \n *brunopeaceandlove60@gmail.com*`
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
@@ -246,7 +246,7 @@ function salvarClientes(clientes) {
             const tabela = document.getElementById('corpoTabela');
             tabela.innerHTML = ''; // Limpa a tabela antes de adicionar os clientes ordenados
 
-            // Adicionar clientes na ordem correta
+            // Adicionar clientes na ordem corretta
             clientesOrdenados.doisDias.forEach(cliente => {
                 adicionarLinhaTabela(cliente.nome, cliente.telefone, new Date(cliente.data));
             });
@@ -267,21 +267,30 @@ function salvarClientes(clientes) {
         }
 
         function toggleDarkMode() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
+    const body = document.body;
+    body.classList.toggle('dark-mode');
 
-            const isDarkMode = body.classList.contains('dark-mode');
-            localStorage.setItem('dark-mode', isDarkMode);
-        }
+    const footer = document.querySelector('footer');
+    footer.classList.toggle('footer-light'); // Alterna a classe para o footer
 
-        function carregarDarkMode() {
-            const isDarkMode = localStorage.getItem('dark-mode') === 'true';
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            }
-        }
+    const isDarkMode = body.classList.contains('dark-mode');
+    localStorage.setItem('dark-mode', isDarkMode);
+}
 
-        window.onload = function() {
-            carregarPagina();
-            carregarDarkMode();
-        };
+function carregarDarkMode() {
+    const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+    const body = document.body;
+    const footer = document.querySelector('footer');
+    
+    if (isDarkMode) {
+        body.classList.add('dark-mode');
+        footer.classList.remove('footer-light'); // Garante que a classe correta seja aplicada
+    } else {
+        footer.classList.add('footer-light'); // Garante que a classe correta seja aplicada
+    }
+}
+
+window.onload = function() {
+    carregarPagina();
+    carregarDarkMode();
+};
