@@ -36,9 +36,6 @@ if ('serviceWorker' in navigator) {
 
 
 
-        
-        
-
 // Mostra o botão quando o usuário rola 20px para baixo
 window.onscroll = function() {
     const backToTopButton = document.getElementById('backToTop');
@@ -53,71 +50,6 @@ window.onscroll = function() {
 document.getElementById('backToTop').onclick = function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
-
-
-
-function verificarLogoComemorativa() {
-    const logo = document.getElementById('logo');
-    const hoje = new Date();
-    const mes = hoje.getMonth() + 1; // Meses são indexados a partir de 0
-    const dia = hoje.getDate();
-
-            
-           // Datas comemorativas
-           
-    if (mes === 12 && dia === 25) { // Natal
-        logo.src = 'img/logo-natal.png';
-        
-        
-    } else if (mes === 1 && dia === 1) { // Ano Novo
-        logo.src = 'img/logo-ano-novo.png';
-        
-        
-    } else if (mes === 7 && dia === 4) { // Independência dos EUA (exemplo)
-        logo.src = 'img/logo-independencia.png';
-        
-        
-    } else if (mes === 10 && dia === 31) {
-        logo.src = 'img/logo-halloween.png';
-        
-        
-    } else if (mes === 2 && dia === 14) { // Dia dos Namorados
-    
-    
-        logo.src = 'img/logo-dia-namorados.png';
-    } else if (mes === 11 && dia === 24) { // Ação de Graças (data variável, exemplo 24 de novembro)
-    
-    
-        logo.src = 'img/logo-acao-gracas.png';
-    } else if (mes === 4 && dia === 1) { // Dia da Mentira
-    
-    
-        logo.src = 'img/logo-dia-mentira.png';
-    } else if (mes === 5 && dia === 1) { // Dia do Trabalhador
-    
-    
-        logo.src = 'img/logo-dia-trabalhador.png';
-    } else if (mes === 6 && dia === 12) { // Dia dos Namorados (Brasil)
-    
-    
-        logo.src = 'img/logo-dia-namorados-br.png';
-    } else if (mes === 8 && dia === 15) { // Dia dos Pais (Brasil, data variável, exemplo 15 de agosto)
-    
-    
-        logo.src = 'img/logo-dia-pais.png';
-    } else if (mes === 10 && dia === 12) { // Dia das Crianças (Brasil)
-    
-    
-    logo.src = 'img/logo-dia-criancas.png'; 
-    } else if (mes === 6 && dia === 24) { // São João
-        logo.src = 'img/logo-sao-joao.png';
-        
-        
-        
-    } else {
-        logo.src = 'img/logo-padrao.png'; // logo padrao
-    }
-}
 
 
 
@@ -164,7 +96,6 @@ function carregarLixeiraPagina() {
 document.addEventListener('DOMContentLoaded', function() {
     carregarLixeiraPagina();
 });
-
 
 
 
@@ -239,7 +170,10 @@ function salvarClientes(clientes) {
     localStorage.setItem('clientes', JSON.stringify(clientes));
 }
 
-
+window.addEventListener('load', function() {
+    const clientes = carregarClientes();
+    clientes.forEach(cliente => adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data));
+});
 
 function alternarLixeira() {
     const containerLixeira = document.getElementById('containerLixeira');
@@ -413,30 +347,30 @@ function adicionarLinhaTabela(nome, telefone, data) {
     const celulaAcoes = novaLinha.insertCell(4);
 
     celulaAcoes.appendChild(criarBotao("Editar", function() {
-        const novoNome = prompt("Digite o novo nome do cliente:", nome);
-        const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
-        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", celulaData.innerText);
+    const novoNome = prompt("Digite o novo nome do cliente:", nome);
+    const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
+    const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", celulaData.innerText);
 
-        if (novoNome && validarTelefone(novoTelefone) && novaData) {
-            const partesData = novaData.split('/');
-            if (partesData.length === 3) {
-                const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-                if (!isNaN(novaDataVencimento.getTime())) {
-                    celulaNome.innerText = novoNome;
-                    celulaTelefone.innerText = novoTelefone;
-                    celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
+    if (novoNome && validarTelefone(novoTelefone) && novaData) {
+        const partesData = novaData.split('/');
+        if (partesData.length === 3) {
+            const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+            if (!isNaN(novaDataVencimento.getTime())) {
+                celulaNome.innerText = novoNome;
+                celulaTelefone.innerText = novoTelefone;
+                celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
 
-                    editarCliente(nome, novoNome, novoTelefone, novaDataVencimento);
-                } else {
-                    alert("Data inválida. Use o formato DD/MM/AAAA.");
-                }
+                editarCliente(nome, novoNome, novoTelefone, novaDataVencimento);
             } else {
-                alert("Formato de data inválido. Use DD/MM/AAAA.");
+                alert("Data inválida. Use o formato DD/MM/AAAA.");
             }
         } else {
-            alert("Por favor, preencha todos os campos corretamente.");
+            alert("Formato de data inválido. Use DD/MM/AAAA.");
         }
-    }));
+    } else {
+        alert("Por favor, preencha todos os campos corretamente.");
+    }
+}));
 
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
@@ -447,7 +381,7 @@ function adicionarLinhaTabela(nome, telefone, data) {
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
         const mensagem = encodeURIComponent(
-            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 81997921351`
+            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 81997921351 `
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
@@ -498,13 +432,12 @@ function exibirClientesAlterados() {
     const campoClientesAlterados = document.getElementById('infoClientes');
 
     if (clientesHoje && clientesHoje.nomes.length > 0) {
-        campoClientesAlterados.innerHTML = '<span class="titulo-clientes-renovados">Renovados hoje: </span><br><br>' + clientesHoje.nomes.join(', ');
+        const listaClientes = clientesHoje.nomes.map(nome => `<li>${nome}</li>`).join('');
+        campoClientesAlterados.innerHTML = `<span class="titulo-clientes-renovados">Clientes renovados hoje:</span><ul>${listaClientes}</ul>`;
     } else {
         campoClientesAlterados.innerHTML = '<span class="nenhum-cliente-renovado">Nenhum cliente renovado hoje</span>';
     }
 }
-
-window.addEventListener('load', exibirClientesAlterados);
 
 
 function atualizarDataVencimento(nomeCliente, novaData) {
@@ -525,28 +458,51 @@ function atualizarDataVencimento(nomeCliente, novaData) {
 
 
 
-function editarCliente(nomeCliente, novoNome, novoTelefone, novaDataVencimento) {
-    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-    let clienteExistente = clientes.find(c => c.nome === nomeCliente);
+
+function registrarClienteAlterado(nome) {
+    const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    let clienteHoje = clientesAlterados.find(c => c.data === hoje);
+
+    if (!clienteHoje) {
+        clienteHoje = { data: hoje, nomes: [] };
+        clientesAlterados.push(clienteHoje);
+    }
+
+    if (!clienteHoje.nomes.includes(nome)) {
+        clienteHoje.nomes.push(nome);
+    }
+
+    localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
+}
+
+
+
+function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
+    let clientes = carregarClientes();
+    let clienteExistente = clientes.find(c => c.nome.toLowerCase() === nomeAntigo.toLowerCase());
 
     if (clienteExistente) {
         let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
-        let novaDataFormatada = new Date(novaDataVencimento).toLocaleDateString('pt-BR');
-        
-        // Atualiza o nome e telefone se necessário
-        clienteExistente.nome = novoNome;
-        clienteExistente.telefone = novoTelefone;
+        let novaDataFormatada = novaDataVencimento.toLocaleDateString('pt-BR');
 
-        // Atualiza a data de vencimento e exibe alteração se necessário
+        // Atualizar apenas se a data de vencimento foi alterada
         if (dataAnterior !== novaDataFormatada) {
+            clienteExistente.nome = novoNome;
+            clienteExistente.telefone = novoTelefone;
             clienteExistente.data = novaDataVencimento;
-            atualizarClientesAlterados(nomeCliente);
+
+            localStorage.setItem('clientes', JSON.stringify(clientes));
+            atualizarClientesAlterados(novoNome); // Registrar cliente alterado
         }
     }
-
-    localStorage.setItem('clientes', JSON.stringify(clientes));
-    window.location.reload(); // Recarrega a página para atualizar a exibição
 }
+
+
+
+
+
 
 
 
@@ -780,13 +736,6 @@ let clients = JSON.parse(localStorage.getItem('clients')) || [];
             displayClients();
         }
 
-        function carregarClientes() {
-            return JSON.parse(localStorage.getItem('clients')) || [];
-        }
-
-        function salvarClientes(clientes) {
-            localStorage.setItem('clients', JSON.stringify(clientes));
-        }
 
         function importarClientes(event) {
             const file = event.target.files[0];
@@ -897,7 +846,7 @@ function excluirClientesSelecionados() {
     carregarLixeiraPagina();
     atualizarTabelaClientes();
     atualizarInfoClientes();
-    carregarPagina();
+    
 }
 
 
@@ -906,7 +855,6 @@ window.onload = function() {
 
     carregarPagina();
     carregarDarkMode();
-    verificarLogoComemorativa();
     verificarBackupDiario();
     exibirClientesAlterados();
     
