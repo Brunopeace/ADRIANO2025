@@ -486,7 +486,7 @@ function adicionarLinhaTabela(nome, telefone, data) {
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
         const mensagem = encodeURIComponent(
-            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX EMAIL* \n \n brunopeaceandlove60@gmail.com `
+            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 81997921351 `
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
