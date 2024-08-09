@@ -65,34 +65,6 @@ document.getElementById('backToTop').onclick = function() {
 };
 
 
-
-function verificarAcesso() {
-    const uuidEsperado = ['d0709af9-0c05-4f56-8808-30f18efa7f86',
- 'bebd18af-b85d-48f5-a651-e73c084da800',
- '897cfa52-6839-4f03-9d7b-353caff240ff'];
-    let uuidArmazenado = localStorage.getItem('uuid');
-
-    if (!uuidArmazenado) {
-        uuidArmazenado = gerarUUID();
-        localStorage.setItem('uuid', uuidArmazenado);
-    }
-
-    if (!uuidEsperado.includes(uuidArmazenado)) {
-        alert("Acesso Negado. Você não tem permissão para acessar esta página.");
-        window.location.href = "acessonegado.html";
-    }
-}
-
-
-function gerarUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-
-
 function verificarLogoComemorativa() {
     const logo = document.getElementById('logo');
     const hoje = new Date();
@@ -1056,7 +1028,6 @@ window.onload = function() {
     carregarDarkMode();
     verificarBackupDiario();
     exibirClientesAlterados();
-    verificarAcesso();
     verificarLogoComemorativa();
     
     
