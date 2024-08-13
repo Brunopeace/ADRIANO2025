@@ -8,7 +8,8 @@ if ('serviceWorker' in navigator) {
     });
   }
 
-  /* código para instalar o aplicativo */
+
+/* código para instalar o aplicativo */
 
   let deferredPrompt;
 
@@ -63,7 +64,6 @@ window.onscroll = function() {
 document.getElementById('backToTop').onclick = function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
-
 
 function verificarLogoComemorativa() {
     const logo = document.getElementById('logo');
@@ -128,17 +128,12 @@ function verificarLogoComemorativa() {
     }
 }
 
-
-
-
 function esvaziarLixeira() {
     if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
         localStorage.removeItem('lixeira');
         carregarLixeiraPagina();
     }
 }
-
-
 
 function carregarLixeiraPagina() {
     const lixeira = carregarLixeira();
@@ -180,9 +175,6 @@ function removerPermanentemente(nome) {
     }
 }
 
-
-
-
 function removerPermanentemente(nome) {
     const lixeira = carregarLixeira();
     const clienteIndex = lixeira.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
@@ -206,7 +198,6 @@ function salvarLixeira(lixeira) {
 
 window.addEventListener('load', carregarLixeiraPagina);
 
-
 function restaurarCliente(nome) {
     const lixeira = carregarLixeira();
     const clientes = carregarClientes();
@@ -221,10 +212,9 @@ function restaurarCliente(nome) {
         carregarLixeiraPagina();
         atualizarInfoClientes();
         atualizarTabelaClientes();
+        window.location.reload();
     }
 }
-
-
 
 function atualizarTabelaClientes() {
     const clientes = carregarClientes();
@@ -235,8 +225,6 @@ function atualizarTabelaClientes() {
         adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data);
     });
 }
-
-
 
 function carregarClientes() {
     return JSON.parse(localStorage.getItem('clientes')) || [];
@@ -265,8 +253,6 @@ toggleButton.textContent = 'Abrir Lixeira';
 }
 }
 
-
-
 function excluirCliente(nome) {
     const clientes = carregarClientes();
     const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
@@ -291,8 +277,6 @@ function excluirCliente(nome) {
     }
 }
 
-
-
 function pesquisarClientesLixeira() {
     const input = document.getElementById('pesquisarLixeira');
     const filter = input.value.toLowerCase();
@@ -307,15 +291,12 @@ function pesquisarClientesLixeira() {
     });
 }
 
-
 function toggleSelecionarTodos(source) {
     const checkboxes = document.querySelectorAll('.checkboxCliente');
     checkboxes.forEach(checkbox => {
         checkbox.checked = source.checked;
     });
 }
-
-
 
 function restaurarSelecionados() {
     const checkboxes = document.querySelectorAll('.checkboxCliente:checked');
@@ -326,9 +307,9 @@ function restaurarSelecionados() {
     checkboxes.forEach(checkbox => {
         const nome = checkbox.getAttribute('data-nome');
         const clienteIndex = lixeira.findIndex(c => c.nome === nome);
-        const clienteExistente = clientes.some(cliente => cliente.nome === nome);
 
-        if (clienteIndex !== -1 && !clienteExistente) {
+        // Verifica se o cliente existe na lista de clientes e se ele está na lixeira
+        if (clienteIndex !== -1 && !clientes.some(cliente => cliente.nome === nome)) {
             const cliente = lixeira.splice(clienteIndex, 1)[0];
             clientes.push(cliente);
             clientesRestaurados = true;
@@ -344,6 +325,8 @@ function restaurarSelecionados() {
 
     if (clientesRestaurados) {
         exibirFeedback("Clientes restaurados com sucesso");
+    } else {
+        exibirFeedback("Nenhum cliente foi restaurado. Clientes com o mesmo nome já existem.");
     }
 }
 
@@ -360,9 +343,6 @@ function exibirFeedback(mensagem) {
         feedbackElement.style.display = "none";  // Oculta a mensagem após 4 segundos
     }, 4000);
 }
-
-
-
 
 function adicionarCliente() {
     const nome = document.getElementById('inputNome').value.trim();
@@ -388,13 +368,9 @@ function adicionarCliente() {
     }
 }
 
-
-
 function validarTelefone(telefone) {
     return telefone.length === 11 && /^\d+$/.test(telefone);
 }
-
-
 
 function calcularDataVencimento(data) {
     let dia = data.getDate() + 1;
@@ -414,7 +390,6 @@ function calcularDataVencimento(data) {
 
     return dataVencimento;
 }
-
 
 function adicionarLinhaTabela(nome, telefone, data) {
     const tabela = document.getElementById('corpoTabela');
@@ -440,53 +415,67 @@ function adicionarLinhaTabela(nome, telefone, data) {
     const celulaAcoes = novaLinha.insertCell(4);
 
     celulaAcoes.appendChild(criarBotao("Editar", function() {
-    const novoNome = prompt("Digite o novo nome do cliente:", nome);
-    const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
-    const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", new Date(data).toLocaleDateString('pt-BR'));
+        const novoNome = prompt("Digite o novo nome do cliente:", nome);
+        const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
+        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", new Date(data).toLocaleDateString('pt-BR'));
 
-    // Verifica se o usuário não cancelou algum dos prompts
-    if (novoNome !== null && novoTelefone !== null && novaData !== null && novoNome && validarTelefone(novoTelefone)) {
-        const partesData = novaData.split('/');
-        if (partesData.length === 3) {
-            const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-            if (!isNaN(novaDataVencimento.getTime())) {
-                const dataAnterior = new Date(data).toLocaleDateString('pt-BR');
-                const novaDataFormatada = novaDataVencimento.toLocaleDateString('pt-BR');
+        // Verifica se o usuário não cancelou algum dos prompts
+        if (novoNome !== null && novoTelefone !== null && novaData !== null && novoNome && validarTelefone(novoTelefone)) {
+            const partesData = novaData.split('/');
+            if (partesData.length === 3) {
+                const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+                if (!isNaN(novaDataVencimento.getTime())) {
+                    const dataAnterior = new Date(data).toLocaleDateString('pt-BR');
+                    const novaDataFormatada = novaDataVencimento.toLocaleDateString('pt-BR');
 
-                if (dataAnterior !== novaDataFormatada) {
-                    atualizarClientesAlterados(nome, dataAnterior, novaDataFormatada);
-                }
+                    if (dataAnterior !== novaDataFormatada) {
+                        atualizarClientesAlterados(nome, dataAnterior, novaDataFormatada);
+                    }
 
-                celulaNome.innerText = novoNome;
-                celulaTelefone.innerText = novoTelefone;
-                celulaData.innerText = novaDataFormatada;
+                    celulaNome.innerText = novoNome;
+                    celulaTelefone.innerText = novoTelefone;
+                    celulaData.innerText = novaDataFormatada;
 
-                const clientes = carregarClientes();
-                const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-                if (clienteIndex !== -1) {
-                    clientes[clienteIndex].nome = novoNome;
-                    clientes[clienteIndex].telefone = novoTelefone;
-                    clientes[clienteIndex].data = novaDataVencimento;
-                    salvarClientes(clientes);
-                    atualizarCorCelulaData(celulaData, novaDataVencimento);
-                    location.reload();
+                    const clientes = carregarClientes();
+                    const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+                    if (clienteIndex !== -1) {
+                        clientes[clienteIndex].nome = novoNome;
+                        clientes[clienteIndex].telefone = novoTelefone;
+                        clientes[clienteIndex].data = novaDataVencimento;
+                        salvarClientes(clientes);
+                        atualizarCorCelulaData(celulaData, novaDataVencimento);
+                        location.reload();
+                    }
                 }
             }
         }
-    }
-}));
-    
+    }));
 
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
             excluirCliente(nome);
         }
     }));
-
+    
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
+
+        // Obter a hora atual
+        const horaAtual = new Date().getHours();
+        let saudacao;
+
+        // Determinar a saudação com base na hora atual
+        if (horaAtual >= 0 && horaAtual < 12) {
+            saudacao = "bom dia";
+        } else if (horaAtual >= 12 && horaAtual < 18) {
+            saudacao = "boa tarde";
+        } else {
+            saudacao = "boa noite";
+        }
+
+        // Construir a mensagem com a saudação correta
         const mensagem = encodeURIComponent(
-            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 81997921351 `
+            `*Olá ${saudacao}, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 81997921351 `
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
@@ -520,29 +509,22 @@ function atualizarCorCelulaData(celulaData, dataVencimento) {
     }
 }
 
+function renovarCliente(nome) {
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    let clientesHoje = JSON.parse(localStorage.getItem('clientesRenovadosHoje')) || { data: hoje, nomes: [] };
 
+    // Se a data armazenada for diferente da data atual, reinicie a lista de nomes
+    if (clientesHoje.data !== hoje) {
+        clientesHoje = { data: hoje, nomes: [] };
+    }
 
-function renovarCliente(nomeCliente) {
-    const clientes = carregarClientes();
-    const clienteExistente = clientes.find(c => c.nome === nomeCliente);
-
-    if (clienteExistente) {
-        let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
-        let novaData = new Date(); // Aqui você pode definir a nova data como desejar
-
-        // Atualiza a data de vencimento do cliente
-        clienteExistente.data = novaData;
-        localStorage.setItem('clientes', JSON.stringify(clientes));
-
-        // Registra a renovação de hoje
-        registrarClienteRenovadoHoje(nomeCliente);
-
-        // Atualiza a exibição dos clientes alterados
+    // Verifica se o cliente já foi renovado hoje
+    if (!clientesHoje.nomes.includes(nome)) {
+        clientesHoje.nomes.push(nome);
+        localStorage.setItem('clientesRenovadosHoje', JSON.stringify(clientesHoje));
         exibirClientesRenovadosHoje();
     }
 }
-
-
 
 function registrarClienteRenovadoHoje(nomeCliente) {
     const hoje = new Date().toLocaleDateString('pt-BR');
@@ -575,10 +557,6 @@ document.addEventListener('DOMContentLoaded', () => {
     exibirClientesRenovadosHoje();
 });
 
-
-
-
-
 // Função para atualizar a lista de clientes alterados no localStorage
 function atualizarClientesAlterados(nome, dataAnterior, novaData) {
 const hoje = new Date().toLocaleDateString('pt-BR');
@@ -595,9 +573,36 @@ localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
 exibirClientesAlterados();
 }
 
-
-
 // Função para exibir a lista de clientes alterados na interface
+function registrarClienteAlterado(nome) {
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    let clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
+    let clientesRenovados = JSON.parse(localStorage.getItem('clientesRenovadosHoje')) || { data: hoje, nomes: [] };
+
+    // Verifica se o cliente já foi renovado hoje
+    const clienteJaRenovado = clientesRenovados.nomes.some(c => c.nome === nome);
+
+    if (clienteJaRenovado) {
+        return; // Não registrar o cliente se ele já foi renovado hoje
+    }
+
+    // Verifica se já existe uma entrada para a data de hoje
+    let clientesHoje = clientesAlterados.find(c => c.data === hoje);
+
+    if (!clientesHoje) {
+        // Se não existe uma entrada para hoje, cria uma nova
+        clientesHoje = { data: hoje, nomes: [] };
+        clientesAlterados.push(clientesHoje);
+    }
+
+    // Verifica se o cliente já foi alterado hoje
+    if (!clientesHoje.nomes.some(c => c.nome === nome)) {
+        clientesHoje.nomes.push({ nome });
+        localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
+        exibirClientesAlterados();
+    }
+}
+
 function exibirClientesAlterados() {
     const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
     const hoje = new Date().toLocaleDateString('pt-BR');
@@ -605,7 +610,8 @@ function exibirClientesAlterados() {
     const campoClientesAlterados = document.getElementById('infoClientes');
 
     if (clientesHoje && clientesHoje.nomes.length > 0) {
-        const listaClientes = clientesHoje.nomes.map(cliente => `<li>${cliente.nome}</li>`).join('');
+        const nomesUnicos = [...new Set(clientesHoje.nomes.map(cliente => cliente.nome))];
+        const listaClientes = nomesUnicos.map(nome => `<li>${nome}</li>`).join('');
         campoClientesAlterados.innerHTML = `<span class="titulo-clientes-renovados">Clientes renovados hoje:</span><ul>${listaClientes}</ul>`;
     } else {
         campoClientesAlterados.innerHTML = '<span class="nenhum-cliente-renovado">Nenhum cliente renovado hoje</span>';
@@ -615,8 +621,6 @@ function exibirClientesAlterados() {
 document.addEventListener('DOMContentLoaded', () => {
     exibirClientesAlterados();
 });
-
-
 
 function atualizarDataVencimento(nomeCliente, novaData) {
     let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
@@ -634,29 +638,6 @@ function atualizarDataVencimento(nomeCliente, novaData) {
         }
     }
 }
-
-
-
-function registrarClienteAlterado(nome) {
-    const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
-    const hoje = new Date().toLocaleDateString('pt-BR');
-
-    let clienteHoje = clientesAlterados.find(c => c.data === hoje);
-
-    if (!clienteHoje) {
-        clienteHoje = { data: hoje, nomes: [] };
-        clientesAlterados.push(clienteHoje);
-    }
-
-    if (!clienteHoje.nomes.includes(nome)) {
-        clienteHoje.nomes.push(nome);
-    }
-
-    localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
-    
-}
-
-
 
 function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
             let clientes = carregarClientes();
@@ -681,8 +662,6 @@ function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
             exibirClientesAlterados();
         });
 
-
-
 function criarBotao(texto, callback) {
     const btn = document.createElement("button");
     btn.innerText = texto;
@@ -690,15 +669,9 @@ function criarBotao(texto, callback) {
     return btn;
 }
 
-
-
 function abrirWhatsApp(telefoneCliente, mensagem) {
     window.open(`https://api.whatsapp.com/send?phone=55${telefoneCliente}&text=${mensagem}`, '_blank');
 }
-
-
-
-
 
 function pesquisarCliente() {
     const termoPesquisa = document.getElementById('inputPesquisar').value.toLowerCase();
@@ -714,8 +687,6 @@ function pesquisarCliente() {
     }
 }
 
-
-
 function atualizarInfoClientes() {
     const totalVencidos = calcularTotalClientesVencidos();
     const totalNaoVencidos = calcularTotalClientesNaoVencidos();
@@ -724,8 +695,6 @@ function atualizarInfoClientes() {
         <span class="clientes-ativos">Clientes ativos: ${totalNaoVencidos}</span>
     `;
 }
-
-
 
 function calcularTotalClientesVencidos() {
     const hoje = new Date();
@@ -740,8 +709,6 @@ function calcularTotalClientesVencidos() {
     return totalVencidos;
 }
 
-
-
 function calcularTotalClientesNaoVencidos() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -755,8 +722,6 @@ function calcularTotalClientesNaoVencidos() {
     });
     return totalNaoVencidos;
 }
-
-
 
 function carregarPagina() {
     const clientes = carregarClientes();
@@ -808,8 +773,6 @@ function carregarPagina() {
     atualizarInfoClientes();
 }
 
-
-
 function toggleDarkMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
@@ -820,8 +783,6 @@ function toggleDarkMode() {
     const isDarkMode = body.classList.contains('dark-mode');
     localStorage.setItem('dark-mode', isDarkMode);
 }
-
-
 
 function carregarDarkMode() {
     const isDarkMode = localStorage.getItem('dark-mode') === 'true';
@@ -835,8 +796,6 @@ function carregarDarkMode() {
         footer.classList.add('footer-light'); // Garante que a classe correta seja aplicada
     }
 }
-
-
 
 function exportarClientes() {
     const clientes = carregarClientes();
@@ -852,111 +811,90 @@ function exportarClientes() {
     URL.revokeObjectURL(url);
 }
 
-
-
-/* function importar clientes */
-let clients = JSON.parse(localStorage.getItem('clients')) || [];
-        let trash = JSON.parse(localStorage.getItem('trash')) || [];
-
-        function saveClients() {
-            localStorage.setItem('clients', JSON.stringify(clients));
-        }
-
-        function saveTrash() {
-            localStorage.setItem('trash', JSON.stringify(trash));
-        }
-
-        function displayClients() {
-            const clientList = document.getElementById('clientList');
-            clientList.innerHTML = '';
-            clients.forEach((client, index) => {
-                const clientDiv = document.createElement('div');
-                clientDiv.className = 'client';
-                clientDiv.innerHTML = `
-                    <span>${client.nome} - ${client.telefone} - ${new Date(client.data).toLocaleDateString()}</span>
-                    <button onclick="deleteClient(${index})">Excluir</button>
-                `;
-                clientList.appendChild(clientDiv);
+function importarClientes(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const clientesImportados = JSON.parse(e.target.result);
+            const clientesAtuais = carregarClientes();
+            
+            // Mapa para rastrear clientes já existentes pelo nome
+            const mapaClientes = new Map();
+            clientesAtuais.forEach(cliente => {
+                mapaClientes.set(cliente.nome.toLowerCase(), cliente);
             });
-        }
 
-        function addClient() {
-            const nome = prompt('Nome do cliente:');
-            const telefone = prompt('Telefone do cliente:');
-            const data = prompt('Data (aaaa-mm-dd):');
-            clients.push({ nome, telefone, data: new Date(data).toISOString() });
-            saveClients();
-            displayClients();
-        }
+            // Atualizar clientes existentes e adicionar novos clientes do backup
+            clientesImportados.forEach(clienteImportado => {
+                const nomeClienteImportado = clienteImportado.nome.toLowerCase();
+                if (mapaClientes.has(nomeClienteImportado)) {
+                    // Cliente já existe, atualizar com informações do backup
+                    const clienteExistente = mapaClientes.get(nomeClienteImportado);
+                    clienteExistente.telefone = clienteImportado.telefone;
+                    clienteExistente.data = clienteImportado.data;
+                } else {
+                    // Novo cliente do backup, adicionar à lista
+                    clientesAtuais.push(clienteImportado);
+                }
+            });
 
-        function deleteClient(index) {
-            const client = clients.splice(index, 1)[0];
-            trash.push(client); // Move o cliente para a lixeira
-            saveClients();
-            saveTrash();
-            displayClients();
-        }
-
-
-        function importarClientes(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const clientesImportados = JSON.parse(e.target.result);
-                    const clientesAtuais = carregarClientes();
-                    
-                    // Mapa para rastrear clientes já existentes pelo nome
-                    const mapaClientes = new Map();
-                    clientesAtuais.forEach(cliente => {
-                        mapaClientes.set(cliente.nome.toLowerCase(), cliente);
-                    });
-
-                    // Atualizar clientes existentes e adicionar novos clientes do backup
-                    clientesImportados.forEach(clienteImportado => {
-                        const nomeClienteImportado = clienteImportado.nome.toLowerCase();
-                        if (mapaClientes.has(nomeClienteImportado)) {
-                            // Cliente já existe, atualizar com informações do backup
-                            const clienteExistente = mapaClientes.get(nomeClienteImportado);
-                            clienteExistente.telefone = clienteImportado.telefone;
-                            clienteExistente.data = clienteImportado.data;
-                        } else {
-                            // Novo cliente do backup, adicionar à lista
-                            clientesAtuais.push(clienteImportado);
-                        }
-                    });
-
-                    // Salvar a lista atualizada de clientes
-                    salvarClientes(clientesAtuais);
-                    window.location.reload();
-                };
-                reader.readAsText(file);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('importarClientes').addEventListener('change', importarClientes);
-            displayClients();
-        });
-
-
-function backupClientes() {
-    const clientes = carregarClientes();
-    const blob = new Blob([JSON.stringify(clientes)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'clientes_backup.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+            // Salvar a lista atualizada de clientes
+            salvarClientes(clientesAtuais);
+            window.location.reload();
+        };
+        reader.readAsText(file);
+    }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('importarClientes').addEventListener('change', importarClientes);
+    
+    if (typeof displayClients === 'function') {
+        displayClients(); // Verifica se a função displayClients existe antes de chamá-la
+    }
+});
 
+function backupClientes() {
+    // Carrega os clientes do localStorage
+    const clientes = carregarClientes();
+    // Carrega a lixeira do localStorage
+    const lixeira = carregarLixeira();
+
+    // Cria um objeto para armazenar o backup
+    const backup = {
+        clientes: clientes,
+        lixeira: lixeira
+    };
+
+    // Converte o objeto de backup para uma string JSON
+    const backupJSON = JSON.stringify(backup);
+
+    // Cria um blob a partir da string JSON
+    const blob = new Blob([backupJSON], { type: 'application/json' });
+
+    // Cria um link temporário para fazer o download do backup
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `backup_clientes_${new Date().toLocaleDateString('pt-BR')}.json`;
+    link.click();
+}
 
 // Função para verificar e realizar o backup diário
+function verificarBackupDiario() {
+    const ultimoBackup = localStorage.getItem('ultimoBackup');
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    if (ultimoBackup !== hoje) {
+        // Chama a função de backup que agora inclui a lixeira
+        backupClientes();
+        localStorage.setItem('ultimoBackup', hoje);
+        console.log('Backup diário realizado com sucesso.');
+    } else {
+        console.log('O backup diário já foi realizado hoje.');
+    }
+}
+
 function verificarBackupDiario() {
     const hoje = new Date();
     const ultimaBackupStr = localStorage.getItem('ultimaBackup');
@@ -979,13 +917,10 @@ document.getElementById('select-all').addEventListener('change', function() {
     });
 });
 
-
-
 function contarClientesLixeira() {
 const lixeira = carregarLixeira();
 return lixeira.length;
 }
-
 
 function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
@@ -1020,7 +955,6 @@ function excluirClientesSelecionados() {
         }, 4000);
     }
 }
-
 
 window.onload = function() {
 
