@@ -66,6 +66,29 @@ document.getElementById('backToTop').onclick = function() {
 };
 
 
+function verificarAcesso() {
+    const uuidEsperado = ['3e1d329a-2742-4b9a-a5b5-e5acf888a784'];
+    let uuidArmazenado = localStorage.getItem('uuid');
+
+    if (!uuidArmazenado) {
+        uuidArmazenado = gerarUUID();
+        localStorage.setItem('uuid', uuidArmazenado);
+    }
+
+    if (!uuidEsperado.includes(uuidArmazenado)) {
+        alert("Acesso Negado. Você não tem permissão para acessar esta página.");
+        window.location.href = "acessonegado.html";
+    }
+}
+
+function gerarUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+
 function esvaziarLixeira() {
     if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
         localStorage.removeItem('lixeira');
@@ -908,6 +931,7 @@ window.onload = function() {
 
     carregarPagina();
     carregarDarkMode();
+    verificarAcesso();
     verificarBackupDiario();
     exibirClientesAlterados();
     
