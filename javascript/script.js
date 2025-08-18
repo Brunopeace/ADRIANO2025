@@ -66,28 +66,6 @@ document.getElementById('backToTop').onclick = function() {
 };
 
 
-function verificarAcesso() {
-    const uuidEsperado = ['e4e6a130-8326-4e00-a47f-989082432be9, 8b3e6960-ccf6-4b31-97d3-93b0ccfd7d56, 4578814b-f75f-48ef-9932-76ef4c288db4'];
-    let uuidArmazenado = localStorage.getItem('uuid');
-
-    if (!uuidArmazenado) {
-        uuidArmazenado = gerarUUID();
-        localStorage.setItem('uuid', uuidArmazenado);
-    }
-
-    if (!uuidEsperado.includes(uuidArmazenado)) {
-        alert("Acesso Negado. Você não tem permissão para acessar esta página.");
-        window.location.href = "acessonegado.html";
-    }
-}
-
-function gerarUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
 function esvaziarLixeira() {
     if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
         localStorage.removeItem('lixeira');
@@ -930,7 +908,6 @@ window.onload = function() {
 
     carregarPagina();
     carregarDarkMode();
-    verificarAcesso();
     verificarBackupDiario();
     exibirClientesAlterados();
     
