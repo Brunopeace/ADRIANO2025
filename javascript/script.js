@@ -88,7 +88,6 @@ function gerarUUID() {
     });
 }
 
-
 function esvaziarLixeira() {
     if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
         localStorage.removeItem('lixeira');
