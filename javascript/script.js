@@ -67,7 +67,7 @@ document.getElementById('backToTop').onclick = function() {
 
 
 function verificarAcesso() {
-    const uuidEsperado = ['3e1d329a-2742-4b9a-a5b5-e5acf888a784'];
+    const uuidEsperado = ['e4e6a130-8326-4e00-a47f-989082432be9', 8b3e6960-ccf6-4b31-97d3-93b0ccfd7d56, 4578814b-f75f-48ef-9932-76ef4c288db4'];
     let uuidArmazenado = localStorage.getItem('uuid');
 
     if (!uuidArmazenado) {
@@ -440,7 +440,7 @@ function adicionarLinhaTabela(nome, telefone, data) {
 
         // Construir a mensagem com a saudação correta
         const mensagem = encodeURIComponent(
-            `*Olá ${saudacao}, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 81997921351 `
+            `*Olá ${saudacao}, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CELULAR* \n \n 71988023878 `
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
